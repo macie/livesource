@@ -1,0 +1,42 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from __future__ import print_function
+import argparse
+import sys
+import traceback
+
+from livesource import SourceCode
+
+__version__ = "0.1"
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description='Python Live Source.',
+        usage="%(prog)s [options] file",)
+    parser.add_argument('file',
+                        type=str)
+    parser.add_argument("-v", "--version",
+                        action="version",
+                        version='%(prog)s ' + __version__,
+                        help="show version number and exit")
+
+    try:
+        args = parser.parse_args()
+        print((SourceCode(args.filename).code()))
+        return 0
+    except SystemExit:
+        # no required args
+        return 2
+    except IOError:
+        # no file error
+        print("livesource: error: no such file", file=sys.stderr)
+        return 1
+    except Exception:
+        # unknown error - show full trackback
+        traceback.format_exc()
+        return 1
+
+
+if __name__ == '__main__':
+    sys.exit(main())

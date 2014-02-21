@@ -1,0 +1,28 @@
+LiveSource TODO's
+=================
+
+
+LiveSourceTree
+--------------
+
+* rethink data structure (blocks)
+
+* exceptions handling inside exec
+
+* move header property to livesource_globals
+
+
+Quasi-sandbox
+-------------
+
+* warning when use os (and sys?) module without apprioprate flag
+
+
+Other
+-----
+
+* plugins for popular editors
+
+* package on PyPI
+
+* documentation on readthedocs.org
