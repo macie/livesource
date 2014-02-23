@@ -9,8 +9,6 @@ LiveSourceTree
 
 * exceptions handling inside exec
 
-* move header property to livesource_globals
-
 * values injecting (add assignment at end of line)
 
 * remove negative col_offset
