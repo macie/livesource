@@ -8,7 +8,7 @@ import ast
 from textwrap import dedent as d
 import unittest
 
-from livesource import LivesourceTree
+from livesource import LiveSource
 
 
 class AssignTestCase(unittest.TestCase):
@@ -17,12 +17,11 @@ class AssignTestCase(unittest.TestCase):
                     a = 1
                  """)
         result = d("""\
-                    import collections; _livesource_listing = collections.defaultdict(lambda: collections.deque(maxlen=10))
                     a = 1
-                    _livesource_listing[1].append(('a', a, ))
+                    __livesource_listing[1].append(('a', a, ))
                    """)
 
-        parsed_tree = ast.dump(LivesourceTree(code)._parse())
+        parsed_tree = ast.dump(LiveSource(code)._parse())
         expected_tree = ast.dump(ast.parse(result))
 
         self.assertEqual(parsed_tree, expected_tree)
@@ -34,16 +33,15 @@ class AssignTestCase(unittest.TestCase):
                     c = 3
                  """)
         result = d("""\
-                    import collections; _livesource_listing = collections.defaultdict(lambda: collections.deque(maxlen=10))
                     a = 1
-                    _livesource_listing[1].append(('a', a, ))
+                    __livesource_listing[1].append(('a', a, ))
                     b = 2
-                    _livesource_listing[2].append(('b', b, ))
+                    __livesource_listing[2].append(('b', b, ))
                     c = 3
-                    _livesource_listing[3].append(('c', c, ))
+                    __livesource_listing[3].append(('c', c, ))
                    """)
 
-        parsed_tree = ast.dump(LivesourceTree(code)._parse())
+        parsed_tree = ast.dump(LiveSource(code)._parse())
         expected_tree = ast.dump(ast.parse(result))
 
         self.assertEqual(parsed_tree, expected_tree)
@@ -53,14 +51,13 @@ class AssignTestCase(unittest.TestCase):
                     a, b, c = 1, 2, 3
                  """)
         result = d("""\
-                    import collections; _livesource_listing = collections.defaultdict(lambda: collections.deque(maxlen=10))
                     a, b, c = 1, 2, 3
-                    _livesource_listing[1].append(('a', a, ))
-                    _livesource_listing[1].append(('b', b, ))
-                    _livesource_listing[1].append(('c', c, ))
+                    __livesource_listing[1].append(('a', a, ))
+                    __livesource_listing[1].append(('b', b, ))
+                    __livesource_listing[1].append(('c', c, ))
                    """)
 
-        parsed_tree = ast.dump(LivesourceTree(code)._parse())
+        parsed_tree = ast.dump(LiveSource(code)._parse())
         expected_tree = ast.dump(ast.parse(result))
 
         self.assertEqual(parsed_tree, expected_tree)
@@ -71,14 +68,13 @@ class AssignTestCase(unittest.TestCase):
                     a.x.y = [1, 2]
                  """)
         result = d("""\
-                    import collections; _livesource_listing = collections.defaultdict(lambda: collections.deque(maxlen=10))
                     a.x = (2,)
-                    _livesource_listing[1].append(('a.x', a.x, ))
+                    __livesource_listing[1].append(('a.x', a.x, ))
                     a.x.y = [1, 2]
-                    _livesource_listing[2].append(('a.x.y', a.x.y, ))
+                    __livesource_listing[2].append(('a.x.y', a.x.y, ))
                    """)
 
-        parsed_tree = ast.dump(LivesourceTree(code)._parse())
+        parsed_tree = ast.dump(LiveSource(code)._parse())
         expected_tree = ast.dump(ast.parse(result))
 
         self.assertEqual(parsed_tree, expected_tree)
@@ -88,13 +84,12 @@ class AssignTestCase(unittest.TestCase):
                     a = b = 1
                  """)
         result = d("""\
-                    import collections; _livesource_listing = collections.defaultdict(lambda: collections.deque(maxlen=10))
                     a = b = 1
-                    _livesource_listing[1].append(('a', a, ))
-                    _livesource_listing[1].append(('b', b, ))
+                    __livesource_listing[1].append(('a', a, ))
+                    __livesource_listing[1].append(('b', b, ))
                    """)
 
-        parsed_tree = ast.dump(LivesourceTree(code)._parse())
+        parsed_tree = ast.dump(LiveSource(code)._parse())
         expected_tree = ast.dump(ast.parse(result))
 
         self.assertEqual(parsed_tree, expected_tree)
@@ -104,13 +99,12 @@ class AssignTestCase(unittest.TestCase):
                     a, b = b, a
                  """)
         result = d("""\
-                    import collections; _livesource_listing = collections.defaultdict(lambda: collections.deque(maxlen=10))
                     a, b = b, a
-                    _livesource_listing[1].append(('a', a, ))
-                    _livesource_listing[1].append(('b', b, ))
+                    __livesource_listing[1].append(('a', a, ))
+                    __livesource_listing[1].append(('b', b, ))
                    """)
 
-        parsed_tree = ast.dump(LivesourceTree(code)._parse())
+        parsed_tree = ast.dump(LiveSource(code)._parse())
         expected_tree = ast.dump(ast.parse(result))
 
         self.assertEqual(parsed_tree, expected_tree)
@@ -122,12 +116,11 @@ class AugAssignTestCase(unittest.TestCase):
                     a += 1
                  """)
         result = d("""\
-                    import collections; _livesource_listing = collections.defaultdict(lambda: collections.deque(maxlen=10))
                     a += 1
-                    _livesource_listing[1].append(('a', a, ))
+                    __livesource_listing[1].append(('a', a, ))
                    """)
 
-        parsed_tree = ast.dump(LivesourceTree(code)._parse())
+        parsed_tree = ast.dump(LiveSource(code)._parse())
         expected_tree = ast.dump(ast.parse(result))
 
         self.assertEqual(parsed_tree, expected_tree)
@@ -139,16 +132,15 @@ class AugAssignTestCase(unittest.TestCase):
                     c *= 3
                  """)
         result = d("""\
-                    import collections; _livesource_listing = collections.defaultdict(lambda: collections.deque(maxlen=10))
                     a += 1
-                    _livesource_listing[1].append(('a', a, ))
+                    __livesource_listing[1].append(('a', a, ))
                     b -= 2
-                    _livesource_listing[2].append(('b', b, ))
+                    __livesource_listing[2].append(('b', b, ))
                     c *= 3
-                    _livesource_listing[3].append(('c', c, ))
+                    __livesource_listing[3].append(('c', c, ))
                    """)
 
-        parsed_tree = ast.dump(LivesourceTree(code)._parse())
+        parsed_tree = ast.dump(LiveSource(code)._parse())
         expected_tree = ast.dump(ast.parse(result))
 
         self.assertEqual(parsed_tree, expected_tree)
@@ -159,14 +151,13 @@ class AugAssignTestCase(unittest.TestCase):
                     a.x.y /= 2
                  """)
         result = d("""\
-                    import collections; _livesource_listing = collections.defaultdict(lambda: collections.deque(maxlen=10))
                     a.x *= 2
-                    _livesource_listing[1].append(('a.x', a.x, ))
+                    __livesource_listing[1].append(('a.x', a.x, ))
                     a.x.y /= 2
-                    _livesource_listing[2].append(('a.x.y', a.x.y, ))
+                    __livesource_listing[2].append(('a.x.y', a.x.y, ))
                    """)
 
-        parsed_tree = ast.dump(LivesourceTree(code)._parse())
+        parsed_tree = ast.dump(LiveSource(code)._parse())
         expected_tree = ast.dump(ast.parse(result))
 
         self.assertEqual(parsed_tree, expected_tree)
@@ -179,13 +170,12 @@ class IfTestCase(unittest.TestCase):
                         pass
                  """)
         result = d("""\
-                    import collections; _livesource_listing = collections.defaultdict(lambda: collections.deque(maxlen=10))
                     if x:
-                        _livesource_listing[1].append((None, x,))
+                        __livesource_listing[1].append((None, x,))
                         pass
                  """)
 
-        parsed_tree = ast.dump(LivesourceTree(code)._parse())
+        parsed_tree = ast.dump(LiveSource(code)._parse())
         expected_tree = ast.dump(ast.parse(result))
 
         self.assertEqual(parsed_tree, expected_tree)
@@ -198,14 +188,13 @@ class WhileTestCase(unittest.TestCase):
                         pass
                  """)
         result = d("""\
-                    import collections; _livesource_listing = collections.defaultdict(lambda: collections.deque(maxlen=10))
                     while x:
-                        _livesource_listing[1].append((None, x,))
+                        __livesource_listing[1].append((None, x,))
                         pass
 
                  """)
 
-        parsed_tree = ast.dump(LivesourceTree(code)._parse())
+        parsed_tree = ast.dump(LiveSource(code)._parse())
         expected_tree = ast.dump(ast.parse(result))
 
         self.assertEqual(parsed_tree, expected_tree)

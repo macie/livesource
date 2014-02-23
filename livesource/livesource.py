@@ -7,55 +7,42 @@ LiveSource.
 import ast
 
 
-class LivesourceTree(ast.NodeVisitor):
-    def __init__(self, code, max_deep=10):
-        """
+class LiveSource(object):
+    """
 
-        """
+    Attributes:
+        code (str): Source code.
+        max_deep (int): Number of cached values at one line.
+
+    """
+    def __init__(self, code, max_deep=10):
         self.code = code
-        self.stack = []
-        # TODO: move to livesource_globals
-        self.header = [
-            # import collections
-            ast.Import(names=[ast.alias(name='collections', asname=None)],
-                lineno=1),
-            # _livesource_listing = collections.defaultdict(
-            #    lambda: collections.deque(maxlen=<max_deep>))
-            ast.Assign(targets=[ast.Name(id='_livesource_listing',
-                ctx=ast.Store())], value=ast.Call(func=ast.Attribute(
-                value=ast.Name(id='collections', ctx=ast.Load()),
-                attr='defaultdict', ctx=ast.Load()), args=[ast.Lambda(
-                args=ast.arguments(args=[], vararg=None, kwarg=None,
-                defaults=[]), body=ast.Call(func=ast.Attribute(value=ast.Name(
-                id='collections', ctx=ast.Load()), attr='deque', ctx=ast.Load()
-                ), args=[], keywords=[ast.keyword(arg='maxlen', value=ast.Num(
-                n=max_deep))], starargs=None, kwargs=None))], keywords=[],
-                starargs=None, kwargs=None), lineno=1)]
+        self.lst = LSTree(max_deep)
 
     def get_values(self):
         """
         Returns values for all lines in code.
 
         Returns:
-            collections.defaultdict object.
+            Mapping type object.
 
         """
-        livesource_globals = {'collections': __import__('collections')}
-        livesource_locals = {}
 
-        # TODO: exceptions handling
+        # FIXME: exceptions handling
         compiled_code = compile(self._parse(), '<livesource>', 'exec')
-        exec(compiled_code, livesource_globals, livesource_locals)
+        exec(compiled_code, self.lst.globals, self.lst.locals)
 
-        return livesource_locals['_livesource_listing']
+        return self.lst.locals['__livesource_listing']
 
     def update(self, code):
         """
         Update source code.
 
+        Args:
+            code (str): New source code.
+
         """
         self.code = code
-        self.stack = []
 
     def _parse(self):
         """
@@ -66,29 +53,60 @@ class LivesourceTree(ast.NodeVisitor):
 
         """
         tree = ast.parse(self.code)
-        parsed_tree = self.visit(tree)
+        self.lst.stack = []  # clear stack (needed?)
+        parsed_tree = self.lst.visit(tree)
         ast.fix_missing_locations(parsed_tree)
         return parsed_tree
+
+
+class LSTree(ast.NodeVisitor):
+    """
+
+    Attributes:
+        globals (dict): Globals for LSTree.
+        locals (dict): Locals for LSTree.
+        stack (list): Stack used by tree visitors.
+
+    """
+    def __init__(self, max_deep=10):
+        """
+        __livesource_listing = collections.defaultdict(
+            lambda: collections.deque(maxlen=max_deep))
+
+        Args:
+            max_deep (int): Number of cached values at one line.
+
+        """
+        # NOTE: __livesource_listing is definied inside locals to speedup
+        #       name searching
+        self.globals = {}
+        self.locals = {
+            '__livesource_listing': __import__('collections').defaultdict(
+                lambda: __import__('collections').deque(maxlen=max_deep))}
+        self.stack = []
 
     #
     #  Tree visitors
     #
 
-    def field_visit(self, fields):
+    def field_visit(self, field):
         """
-        Visit nodes in fields.
+        Visit nodes in field.
+
+        Args:
+            Field (obj or list): ast node field.
 
         """
-        if not isinstance(fields, list):
-            fields = [fields]
-        self.generic_visit(ast.Expression(body=fields))
+        if not isinstance(field, list):
+            field = [field]
+        self.generic_visit(ast.Expression(body=field))
 
     def block_visit(self, fields):
         """
         Visit nodes in fields.
 
         Returns:
-            list of fields sorted by line number
+            Sequence of fields sorted by line number.
 
         """
         old_stack = self.stack
@@ -108,19 +126,13 @@ class LivesourceTree(ast.NodeVisitor):
     #
 
     def visit_Expression(self, node):
-        tree = self.header[:]
-        tree.extend(self.block_visit(node.body))
-        return ast.Expression(body=tree)
+        return ast.Expression(body=self.block_visit(node.body))
 
     def visit_Interactive(self, node):
-        tree = self.header[:]
-        tree.extend(self.block_visit(node.body))
-        return ast.Interactive(body=tree)
+        return ast.Interactive(body=self.block_visit(node.body))
 
     def visit_Module(self, node):
-        tree = self.header[:]
-        tree.extend(self.block_visit(node.body))
-        return ast.Module(body=tree)
+        return ast.Module(body=self.block_visit(node.body))
 
     #
     #  Statements
@@ -216,20 +228,21 @@ class LivesourceTree(ast.NodeVisitor):
     @staticmethod
     def add_listener(lineno, var_name, val):
         """
-        Add ... inside livesource listener context.
+        Assigns watched variable with __livesource_listing.
 
         Args:
-            args - list of arguments for <func_name>,
-            func_name - function name from livesource listener context
+            lineno (int): Line number of watched variable in source code.
+            var_name (str): Watched variable name.
+            val (ast.expr): Value of watched variable.
 
         Returns:
-            ast.Expr object
+            ast node.
 
         """
-        # TODO: change data structure to omit multiple inline variable assignment
-        # _livesource_listing[lineno].append(var_name, val, )
+        # FIXME: change data structure to fix multiple inline variable assignment
+        # __livesource_listing[lineno].append(var_name, val, )
         return ast.Expr(value=ast.Call(func=ast.Attribute(value=ast.Subscript(
-               value=ast.Name(id='_livesource_listing', ctx=ast.Load()),
+               value=ast.Name(id='__livesource_listing', ctx=ast.Load()),
                slice=ast.Index(value=ast.Num(n=lineno)), ctx=ast.Load()),
                attr='append', ctx=ast.Load()), args=[ast.Tuple(elts=[var_name,
                val,], ctx=ast.Load()),], keywords=[], starargs=None,
