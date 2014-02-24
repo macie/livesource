@@ -12,10 +12,17 @@ class LiveSource(object):
 
     Attributes:
         code (str): Source code.
-        max_deep (int): Number of cached values at one line.
+        lst (int): LiveSource ast tree.
 
     """
     def __init__(self, code, max_deep=10):
+        """
+
+        Args:
+            code (str): Source code.
+            max_deep (int): Number of cached values at one line.
+
+        """
         self.code = code
         self.lst = LSTree(max_deep)
 
@@ -33,6 +40,18 @@ class LiveSource(object):
         exec(compiled_code, self.lst.globals, self.lst.locals)
 
         return self.lst.locals['__livesource_listing']
+
+    def set_variable(self, lineno, var, val):
+        """
+        Set variable value in specified line.
+
+        Args:
+            lineno (int): Line number.
+            var (str): Variable name.
+            val: Variable value
+
+        """
+        pass
 
     def update(self, code):
         """
@@ -126,12 +145,33 @@ class LSTree(ast.NodeVisitor):
     #
 
     def visit_Expression(self, node):
+        """
+        Used when code is compiled by eval().
+
+        Args:
+            node (ast.AST): ast node.
+
+        """
         return ast.Expression(body=self.block_visit(node.body))
 
     def visit_Interactive(self, node):
+        """
+        Used when code is compiled by interactive console.
+
+        Args:
+            node (ast.AST): ast node.
+
+        """
         return ast.Interactive(body=self.block_visit(node.body))
 
     def visit_Module(self, node):
+        """
+        Used when code is normally executed.
+
+        Args:
+            node (ast.AST): ast node.
+
+        """
         return ast.Module(body=self.block_visit(node.body))
 
     #
@@ -139,14 +179,35 @@ class LSTree(ast.NodeVisitor):
     #
 
     def visit_Assign(self, node):
+        """
+        Assignment statement.
+
+        Args:
+            node (ast.AST): ast node.
+
+        """
         self.field_visit(node.targets)
         return node
 
     def visit_AugAssign(self, node):
+        """
+        Augmented assignment statement.
+
+        Args:
+            node (ast.AST): ast node.
+
+        """
         self.field_visit(node.target)
         return node
 
     def visit_If(self, node):
+        """
+        Conditional statement.
+
+        Args:
+            node (ast.AST): ast node.
+
+        """
         node.body = self.block_visit(node.body)
 
         lineno = node.lineno
@@ -159,15 +220,39 @@ class LSTree(ast.NodeVisitor):
 
         return node
 
-    def visit_Print(self, node):  # ONLY Python2
+    def visit_Print(self, node):
+        """
+        Print statement.
+
+        Args:
+            node (ast.AST): ast node.
+
+        Note:
+            Only in python 2.
+
+        """
         self.field_visit(node.values)
         return node
 
     def visit_Return(self, node):
+        """
+        Return statement.
+
+        Args:
+            node (ast.AST): ast node.
+
+        """
         self.field_visit(node.value)
         return node
 
     def visit_While(self, node):
+        """
+        While loop.
+
+        Args:
+            node (ast.AST): ast node.
+
+        """
         self.block_visit(node.body)
 
         lineno = node.lineno
@@ -185,6 +270,13 @@ class LSTree(ast.NodeVisitor):
     #
 
     def visit_Attribute(self, node):
+        """
+        Attribute expression.
+
+        Args:
+            node (ast.AST): ast node.
+
+        """
         attr_obj = node
         name = attr_obj.attr
         while isinstance(attr_obj.value, ast.Attribute):  # nested attributes
@@ -205,6 +297,13 @@ class LSTree(ast.NodeVisitor):
         return node
 
     def visit_Compare(self, node):
+        """
+        Compare expression.
+
+        Args:
+            node (ast.AST): ast node.
+
+        """
         lineno = node.lineno
         name = ast.Name(id='None', ctx=ast.Load())
         value = node
@@ -214,6 +313,13 @@ class LSTree(ast.NodeVisitor):
         return node
 
     def visit_Name(self, node):
+        """
+        Name expression.
+
+        Args:
+            node (ast.AST): ast node.
+
+        """
         lineno = node.lineno
         name = ast.Str(s=node.id)
         value = ast.Name(id=node.id,
