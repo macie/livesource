@@ -5,7 +5,7 @@ import argparse
 import sys
 import traceback
 
-from livesource import SourceCode
+from livesource import LiveSource
 
 __version__ = "0.1"
 
@@ -23,7 +23,7 @@ def main():
 
     try:
         args = parser.parse_args()
-        print((SourceCode(args.filename).code()))
+        print(LiveSource(args.filename).get_values())
         return 0
     except SystemExit:
         # no required args
