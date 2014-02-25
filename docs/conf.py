@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 #
 # LiveSource documentation build configuration file, created by
@@ -62,7 +62,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'LiveSource'
-copyright = '2014, Maciej Żok'
+copyright = u'2014, Maciej Żok'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -280,9 +280,9 @@ texinfo_documents = [
 
 # Bibliographic Dublin Core info.
 epub_title = 'LiveSource'
-epub_author = 'Maciej Żok'
-epub_publisher = 'Maciej Żok'
-epub_copyright = '2014, Maciej Żok'
+epub_author = u'Maciej Żok'
+epub_publisher = u'Maciej Żok'
+epub_copyright = u'2014, Maciej Żok'
 
 # The basename for the epub file. It defaults to the project name.
 #epub_basename = 'LiveSource'
