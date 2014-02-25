@@ -1,9 +1,5 @@
-==========
-LiveSource
-==========
-
-LiveSource provides both: commandline application and library for live coding
-and rapid development. It provides both: library and commandline application.
+LiveSource is a Python library and command-line tool for monitoring values in
+source code, based on ideas from Bret Victor “Inventing on Principle” lecture.
 
 
 Applications
@@ -15,13 +11,12 @@ Applications
 
 * art (real-time audio-visual performance)
 
-Typical usage often looks like this::
+Typical usage::
 
     #!/usr/bin/env python
+    from livesource import LiveSource
 
-    from livesource import SourceCode
-
-    print((SourceCode('a = max([1, 2, 3])').code()))
+    print((LiveSource('a = max([1, 2, 3])').get_values()))
 
 (Note the double-colon and 4-space indent formatting above.)
 
