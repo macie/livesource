@@ -1,1 +1,1 @@
-from livesource import LiveSource
+from livesource import *

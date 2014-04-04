@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 LiveSource.
@@ -51,7 +50,7 @@ class LiveSource(object):
             val: Variable value
 
         """
-        pass
+        return NotImplemented
 
     def update(self, code):
         """
@@ -346,6 +345,7 @@ class LSTree(ast.NodeVisitor):
 
         """
         # FIXME: change data structure to fix multiple inline variable assignment
+
         # __livesource_listing[lineno].append(var_name, val, )
         return ast.Expr(value=ast.Call(func=ast.Attribute(value=ast.Subscript(
                value=ast.Name(id='__livesource_listing', ctx=ast.Load()),
