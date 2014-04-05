@@ -3,9 +3,7 @@
 LSTree tests.
 
 """
-import ast
 from mock import MagicMock, patch
-from textwrap import dedent as d
 import unittest
 
 from livesource import LiveSource
@@ -36,7 +34,7 @@ class LiveSourceTestCase(unittest.TestCase):
 
         self.assertEqual(result, '')
 
-    @unittest.expectedFailure
+    @unittest.skip("Not Implemented")
     def test_set_variable(self):
         pass
 

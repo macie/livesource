@@ -135,8 +135,13 @@ class LSTree(ast.NodeVisitor):
             self.stack = old_stack
 
         fields.extend(self.stack)
-        sorted_args = sorted(fields,
-                             key=lambda obj: (obj.lineno, obj.col_offset))
+
+        try:
+            sorted_args = sorted(fields,
+                                 key=lambda obj: (obj.lineno, obj.col_offset))
+        except AttributeError:  # no obj attributes
+            sorted_args = []
+
         return sorted_args
 
     #
@@ -213,7 +218,7 @@ class LSTree(ast.NodeVisitor):
         name = ast.Name(id='None', ctx=ast.Load())  # no name
         value = node.test  # boolean
 
-        body = [self.add_listener(lineno, name, value)]
+        body = [self._add_listener(lineno, name, value)]
         body.extend(node.body)
         node.body = body
 
@@ -258,7 +263,7 @@ class LSTree(ast.NodeVisitor):
         name = ast.Name(id='None', ctx=ast.Load())
         value = node.test
 
-        body = [self.add_listener(lineno, name, value)]
+        body = [self._add_listener(lineno, name, value)]
         body.extend(node.body)
         node.body = body
 
@@ -291,7 +296,7 @@ class LSTree(ast.NodeVisitor):
                               lineno=lineno,
                               col_offset=node.col_offset)
 
-        self.stack.append(self.add_listener(lineno, name, value))
+        self.stack.append(self._add_listener(lineno, name, value))
 
         return node
 
@@ -307,7 +312,7 @@ class LSTree(ast.NodeVisitor):
         name = ast.Name(id='None', ctx=ast.Load())
         value = node
 
-        self.stack.append(self.add_listener(lineno, name, value))
+        self.stack.append(self._add_listener(lineno, name, value))
 
         return node
 
@@ -326,12 +331,12 @@ class LSTree(ast.NodeVisitor):
                          lineno=lineno,
                          col_offset=node.col_offset)
 
-        self.stack.append(self.add_listener(lineno, name, value))
+        self.stack.append(self._add_listener(lineno, name, value))
 
         return node
 
     @staticmethod
-    def add_listener(lineno, var_name, val):
+    def _add_listener(lineno, var_name, val):
         """
         Assigns watched variable with __livesource_listing.
 

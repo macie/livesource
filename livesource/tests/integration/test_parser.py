@@ -1,7 +1,6 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-ComplexNode tests.
+Parser tests.
 
 """
 import ast
@@ -173,6 +172,68 @@ class IfTestCase(unittest.TestCase):
                     if x:
                         __livesource_listing[1].append((None, x,))
                         pass
+                 """)
+
+        parsed_tree = ast.dump(LiveSource(code)._parse())
+        expected_tree = ast.dump(ast.parse(result))
+
+        self.assertEqual(parsed_tree, expected_tree)
+
+
+class PrintTestCase(unittest.TestCase):
+    def test_trivial(self):
+        code = d("""\
+                    print "aaa"
+                 """)
+        result = d("""\
+                    print "aaa"
+                    __livesource_listing[1].append((None, "aaa",))
+
+                 """)
+
+        parsed_tree = ast.dump(LiveSource(code)._parse())
+        expected_tree = ast.dump(ast.parse(result))
+
+        self.assertEqual(parsed_tree, expected_tree)
+
+    def test_comma(self):
+        code = d("""\
+                    print "a", "b"
+                 """)
+        result = d("""\
+                    print "a", "b"
+                    __livesource_listing[1].append((None, ("a", "b"),))
+
+                 """)
+
+        parsed_tree = ast.dump(LiveSource(code)._parse())
+        expected_tree = ast.dump(ast.parse(result))
+
+        self.assertEqual(parsed_tree, expected_tree)
+
+    def test_concatenate(self):
+        code = d("""\
+                    print "a" + "b"
+                 """)
+        result = d("""\
+                    print "a" + "b"
+                    __livesource_listing[1].append((None, "a" + "b",))
+
+                 """)
+
+        parsed_tree = ast.dump(LiveSource(code)._parse())
+        expected_tree = ast.dump(ast.parse(result))
+
+        self.assertEqual(parsed_tree, expected_tree)
+
+    def test_format(self):
+        code = d("""\
+                    print "a{}".format("b")
+                 """)
+        result = d("""\
+                    print "a{}".format("b")
+                    __livesource_listing[1].append((None, "a{}".format("b"),))
+
                  """)
 
         parsed_tree = ast.dump(LiveSource(code)._parse())
