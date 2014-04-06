@@ -299,10 +299,7 @@ class LSTree(ast.NodeVisitor):
             attr_obj = attr_obj.value
             name = '{0}.{1}'.format(attr_obj.attr, name)
         else:
-            try:
-                name = ast.Str(s='{0}.{1}'.format(attr_obj.value.id, name))
-            except AttributeError:
-                name = ast.Str(s=attr_obj.value)
+            name = ast.Str(s='{0}.{1}'.format(attr_obj.value.id, name))
 
         lineno = node.lineno
         value = ast.Attribute(value=node.value,
@@ -364,12 +361,24 @@ class LSTree(ast.NodeVisitor):
             ast node.
 
         """
-        # FIXME: change data structure to fix multiple inline variable assignment
+        # FIXME: change data structure to fix
+        #        multiple inline variable assignment
 
         # __livesource_listing[lineno].append(var_name, val, )
-        return ast.Expr(value=ast.Call(func=ast.Attribute(value=ast.Subscript(
-               value=ast.Name(id='__livesource_listing', ctx=ast.Load()),
-               slice=ast.Index(value=ast.Num(n=lineno)), ctx=ast.Load()),
-               attr='append', ctx=ast.Load()), args=[ast.Tuple(elts=[var_name,
-               val,], ctx=ast.Load()),], keywords=[], starargs=None,
-               kwargs=None), lineno=lineno+1, col_offset=-1)
+        return ast.Expr(
+            value=ast.Call(
+                func=ast.Attribute(
+                    value=ast.Subscript(
+                        value=ast.Name(id='__livesource_listing',
+                                       ctx=ast.Load()),
+                        slice=ast.Index(value=ast.Num(n=lineno)),
+                        ctx=ast.Load()),
+                    attr='append',
+                    ctx=ast.Load()),
+                args=[ast.Tuple(elts=[var_name, val, ],
+                                ctx=ast.Load()), ],
+                keywords=[],
+                starargs=None,
+                kwargs=None),
+            lineno=lineno + 1,
+            col_offset=-1)

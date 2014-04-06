@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-LSTree tests.
+LiveSource tests.
 
 """
 from mock import MagicMock, patch
