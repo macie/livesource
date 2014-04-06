@@ -1,3 +1,8 @@
+.. image:: https://travis-ci.org/macie/livesource.svg?branch=master
+  :target: https://travis-ci.org/macie/livesource
+.. image:: https://coveralls.io/repos/macie/livesource/badge.png?branch=master
+  :target: https://coveralls.io/r/macie/livesource
+
 LiveSource is a Python library and command-line tool for monitoring values in
 source code, based on ideas from Bret Victor “Inventing on Principle” lecture.
 
