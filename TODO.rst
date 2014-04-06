@@ -13,11 +13,13 @@ LiveSourceTree
 
 * remove negative col_offset
 
+* tests for python3
+
 
 Quasi-sandbox
 -------------
 
-* warning when use os (and sys?) module without apprioprate flag
+* warning when code use os (and sys?) module without apprioprate flag
 
 
 Other
