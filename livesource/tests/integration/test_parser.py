@@ -184,10 +184,13 @@ class PrintTestCase(unittest.TestCase):
     def test_trivial(self):
         code = d("""\
                     print "aaa"
+                    print "bbb"
                  """)
         result = d("""\
                     print "aaa"
-                    __livesource_listing[1].append((None, "aaa",))
+                    __livesource_listing[1].append((None, " ".join(("aaa",)),))
+                    print "bbb"
+                    __livesource_listing[2].append((None, " ".join(("bbb",)),))
 
                  """)
 
@@ -198,11 +201,11 @@ class PrintTestCase(unittest.TestCase):
 
     def test_comma(self):
         code = d("""\
-                    print "a", "b"
+                    print "a", "b", "c"
                  """)
         result = d("""\
-                    print "a", "b"
-                    __livesource_listing[1].append((None, ("a", "b"),))
+                    print "a", "b", "c"
+                    __livesource_listing[1].append((None, " ".join(("a", "b", "c")),))
 
                  """)
 
@@ -217,7 +220,7 @@ class PrintTestCase(unittest.TestCase):
                  """)
         result = d("""\
                     print "a" + "b"
-                    __livesource_listing[1].append((None, "a" + "b",))
+                    __livesource_listing[1].append((None, " ".join(("a" + "b",)),))
 
                  """)
 
@@ -232,7 +235,7 @@ class PrintTestCase(unittest.TestCase):
                  """)
         result = d("""\
                     print "a{}".format("b")
-                    __livesource_listing[1].append((None, "a{}".format("b"),))
+                    __livesource_listing[1].append((None, " ".join(("a{}".format("b"),)),))
 
                  """)
 

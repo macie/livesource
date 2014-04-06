@@ -235,7 +235,19 @@ class LSTree(ast.NodeVisitor):
             Only in python 2.
 
         """
-        self.field_visit(node.values)
+        lineno = node.lineno
+        name = ast.Name(id='None', ctx=ast.Load())  # no name
+        value = ast.Call(func=ast.Attribute(value=ast.Str(s=' '),
+                                            attr='join',
+                                            ctx=ast.Load()),
+                         args=[ast.Tuple(elts=node.values,
+                                         ctx=ast.Load())],
+                         keywords=[],
+                         starargs=None,
+                         kwargs=None)
+
+        self.stack.append(self._add_listener(lineno, name, value))
+
         return node
 
     def visit_Return(self, node):
@@ -287,7 +299,10 @@ class LSTree(ast.NodeVisitor):
             attr_obj = attr_obj.value
             name = '{0}.{1}'.format(attr_obj.attr, name)
         else:
-            name = ast.Str(s='{0}.{1}'.format(attr_obj.value.id, name))
+            try:
+                name = ast.Str(s='{0}.{1}'.format(attr_obj.value.id, name))
+            except AttributeError:
+                name = ast.Str(s=attr_obj.value)
 
         lineno = node.lineno
         value = ast.Attribute(value=node.value,
