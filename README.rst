@@ -2,6 +2,9 @@
   :target: https://travis-ci.org/macie/livesource
 .. image:: https://coveralls.io/repos/macie/livesource/badge.png?branch=master
   :target: https://coveralls.io/r/macie/livesource
+.. image:: https://landscape.io/github/macie/livesource/master/landscape.png
+  :target: https://landscape.io/github/macie/livesource/master
+  :alt: Code Health
 
 LiveSource is a Python library and command-line tool for monitoring values in
 source code, based on ideas from Bret Victor “Inventing on Principle” lecture.
